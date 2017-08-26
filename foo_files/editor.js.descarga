@@ -1,0 +1,369 @@
+var posicion='';
+console.log("funcion");
+function loadData() {
+
+	var sessionDataHTML = sessionStorage["sDataHTML"];
+
+	if (sessionDataHTML != null) {
+		document.getElementById("textBox").textContent = sessionDataHTML;
+	}
+}
+
+function saveDataHTML() {
+
+	var sessionDataHTML = document.getElementById("textBox").innerHTML;
+	sessionStorage["sDataHTML"] = sessionDataHTML;
+	alert(sessionDataHTML);
+
+}
+
+
+function loadDataHTML() {
+
+	var sessionDataHTML = sessionStorage["sDataHTML"];
+	if (sessionDataHTML != null) {
+		document.getElementById("textBox").innerHTML = sessionDataHTML;
+	}
+}
+
+function permutar(marcado) {
+
+	if (marcado == true) {
+		saveDataHTML(); loadData();
+	}
+	else
+		loadDataHTML();
+}
+
+function showMyImage (fileInput) {
+    var files = fileInput.files;
+
+    for (var i = 0; i < files.length; i++) {
+
+        var file = files[i];
+        var imageType = /image.*/;
+
+        if (!file.type.match(imageType)) {
+            continue;
+        }
+        var img = $('<img id="thumbnil" style="width:50px; height:50px; margin-top:10px;"  src="" alt="imagen">');
+        img.file = file;
+        var reader = new FileReader();
+
+        reader.onload = (function(aImg) {
+            return function(e) {
+                aImg.src = e.target.result;
+                aImg.alt = "imagen_url";
+                aImg.style= "width:30px; height:30px; margin-top:10px;";
+                restoreSelection();
+                var bandAgrega = document.execCommand('insertHTML',false, '<img id="thumbnil" style="width:50px; height:50px; margin-top:10px;" src="' + e.target.result +'" alt="imagen_url">');
+
+				if(bandAgrega === false){
+					$("#textBox").focus();
+					document.execCommand('insertHTML',false, '<img id="thumbnil" style="width:50px; height:50px; margin-top:10px;" src="' + e.target.result +'" alt="imagen_url">');
+				}
+
+            };
+        })(img);
+
+        reader.readAsDataURL(file);
+    }
+}
+
+function showImagenWeb(){
+
+	var img = $("#add-urlImg").val();
+
+	$(".img").html('<img id="thumbnil" style="width:50px; height:50px; margin-top:10px;" src="' + img +'" alt="imagen_url">');
+}
+
+function restoreSelection () {
+
+	selection = window.getSelection();
+
+	if (posicion) {
+
+		try {
+			selection.removeAllRanges();
+		} catch (ex) {}
+
+		selection.addRange(posicion);
+	}else {
+
+		//$("#textBox").focus();
+	}
+
+}
+
+function selectTipe (num) {
+	switch(num) {
+		case 1 :
+			document.execCommand('bold',false,'');
+			break;
+		case 2:
+			document.execCommand('italic',false,'');
+			break;
+		case 3:
+			document.execCommand('underline',false,'');
+			break;
+	}
+}
+
+function asignarTipoLetra () {
+
+	if ( $("#add-negr").hasClass("activate") ) {
+		selectTipe(1);
+	}
+
+	if ( $("#add-ital").hasClass("activate") ) {
+		selectTipe(2);
+	}
+
+	if ( $("#add-subr").hasClass("activate") ) {
+		selectTipe(3);
+	}
+}
+
+function buttonClickNegrita ( e ) {
+	$("#add-negr").toggleClass("activate");
+	selectTipe(1);
+
+};
+
+function buttonClickItalica ( e ) {
+	$("#add-ital").toggleClass("activate");
+	selectTipe(2);
+
+};
+
+function buttonClickSubrayado ( e ) {
+	$("#add-subr").toggleClass("activate");
+	selectTipe(3);
+
+};
+
+function removeClases () {
+	$("#add-negr").removeClass("activate");
+	$("#add-ital").removeClass("activate");
+	$("#add-subr").removeClass("activate");
+}
+
+function buttonClickLink ( e ) {
+	var urlLink = prompt("Ingresar url:", "https://");
+
+	if (urlLink != null) {
+		restoreSelection();
+		var bandAgrega = document.execCommand('insertHTML',false, '<a href="' + urlLink +
+			'" target="_blank">' + urlLink +'</a>');
+
+		if(bandAgrega === false){
+			$("#textBox").focus();
+			document.execCommand('insertHTML',false, '<a href="' + urlLink +
+			'" target="_blank">' + urlLink +'</a>');
+		}
+	}
+};
+
+function buttonClickCodigo ( e ) {
+
+	document.getElementById("add-img").disabled = true;
+	document.getElementById("add-link").disabled = true;
+
+	var pos = $("#textBox").offset();
+	console.log(pos);
+
+	$('#modal-inf').css({
+		top: pos.top,
+		left: pos.left
+	});
+
+	$("#pop-cod").css({
+		top: pos.top +50,
+		left: pos.left +150
+	});
+
+	$('#modal-inf').fadeIn(1000); $("#pop-cod").fadeIn(1050); $("#add-textCode").focus();
+	removeClases();
+};
+
+function buttonClickImagen ( e ) {
+	var urlImage = prompt("Ingresar imagen:", "https://");
+
+	if (urlImage != null) {
+		restoreSelection();
+
+		var bandAgrega = document.execCommand('insertHTML',false, '<img id="thumbnil" style="width:50px; height:50px; margin-top:10px;" src="' + urlImage +'" alt="imagen_url">');
+
+		if(bandAgrega === false){
+			$("#textBox").focus();
+			document.execCommand('insertHTML',false, '<img id="thumbnil" style="width:50px; height:50px; margin-top:10px;" src="' + urlImage +'" alt="imagen_url">');
+		}
+	}
+
+};
+
+function agregarClickLink ( e ) {
+
+	document.getElementById("add-img").disabled = false;
+	document.getElementById("add-cod").disabled = false;
+
+	restoreSelection(); var link = $("#add-urlLink").val();
+
+	$("#pop-link").hide(); $('#modal-inf').hide();
+
+	if(link !== null && link !== ""){
+
+		var bandAgrega = document.execCommand('insertHTML',false, '<a href="' + link +
+			'" target="_blank">' + link +'</a>');
+
+		if(bandAgrega === false){
+			$("#textBox").focus();
+			document.execCommand('insertHTML',false, '<a href="' + link +
+			'" target="_blank">' + link +'</a>');
+		}
+
+		document.getElementById( "add-urlLink" ).value = "";
+	}
+};
+
+function agregarClickImg ( e ) {
+
+	document.getElementById("add-link").disabled = false;
+	document.getElementById("add-cod").disabled = false;
+
+	restoreSelection(); img = $('.img').clone();
+
+	img[0].children[0].id = "";
+
+	$("#pop-img").hide(); $('#modal-inf').hide();
+
+	if(img[0].children[0].alt === "imagen_url"){
+
+		img[0].children[0].alt = "";
+		console.log(img);
+		var bandAgrega = document.execCommand('insertHTML',false, img.html());
+
+		if(bandAgrega === false){
+			$("#textBox").focus();
+			document.execCommand('insertHTML',false, img.html());
+		}
+
+		var img_popup = $("#thumbnil");
+		img_popup[0].src = ""; img_popup[0].style="width:50px; height:50px; margin-top:10px;"
+
+		document.getElementById( "add-urlImg" ).value = "";
+		document.getElementById( "thumbnil" ).value = "";
+	}
+};
+
+function agregarClickCodigo ( e ) {
+
+	document.getElementById("add-img").disabled = false;
+	document.getElementById("add-link").disabled = false;
+
+	restoreSelection(); var codigo = $("textarea").val();
+
+	$("#pop-cod").hide(); $('#modal-inf').hide();
+
+
+	if(codigo !== null && codigo !== ""){
+
+		var bandAgrega = document.execCommand('insertHTML',false,'<br><div><pre class="' + $( "#myselect" ).val() +'">' + codigo + '</pre></div><br>');
+
+		if(bandAgrega === false){
+			$("#textBox").focus();
+			document.execCommand('insertHTML',false,'<br><div><pre class="' + $( "#myselect" ).val() + '">' + codigo + '</pre></div><br>');
+		}
+
+		$('pre').each(function(i, block) {
+		    hljs.highlightBlock(block);
+		});
+
+		document.getElementById( "add-textCode" ).value = "";
+		document.getElementById( "myselect" )[0].selected = "html";
+	}
+};
+
+function cancelarClickLink ( e ) {
+
+	document.getElementById("add-img").disabled = false;
+	document.getElementById("add-cod").disabled = false;
+
+	$("#modal-inf").hide(); $("#pop-link").hide();
+
+	document.getElementById( "add-urlLink" ).value = "";
+
+	restoreSelection();
+};
+
+function cancelarClickImg ( e ) {
+
+	document.getElementById( "add-link" ).disabled = false;
+	document.getElementById( "add-cod" ).disabled = false;
+
+	$( "#modal-inf" ).hide(); $( "#pop-img" ).hide();
+
+	document.getElementById( "add-urlImg" ).value = "";
+	document.getElementById( "thumbnil" ).value = "";
+
+	restoreSelection();
+};
+
+function cancelarClickCodigo ( e ) {
+	document.getElementById( "add-img" ).disabled = false;
+	document.getElementById( "add-link" ).disabled = false;
+
+	$("#modal-inf").hide(); $("#pop-cod").hide();
+
+	document.getElementById( "add-textCode" ).value = "";
+	document.getElementById( "myselect" )[0].selected = "html";
+
+	restoreSelection();
+};
+
+function encontroFoco () {
+	console.log("encontroFoco");
+	document.getElementById("add-negr").disabled = false;
+	document.getElementById("add-ital").disabled = false;
+	document.getElementById("add-subr").disabled = false;
+	document.getElementById("add-link").disabled = false;
+	document.getElementById("add-img").disabled = false;
+	document.getElementById("add-cod").disabled = false;
+	restoreSelection();
+	asignarTipoLetra();
+};
+
+function perdioFoco () {
+	console.log("perdioFoco");
+	posicion = window.getSelection();
+	console.log(window.event.relatedTarget);
+	if ( window.event.relatedTarget == null ) {
+		document.getElementById("add-negr").disabled = true;
+		document.getElementById("add-ital").disabled = true;
+		document.getElementById("add-subr").disabled = true;
+		document.getElementById("add-link").disabled = true;
+		document.getElementById("add-img").disabled = true;
+		document.getElementById("add-cod").disabled = true;
+	} else {
+		console.log(window.event.relatedTarget.id);
+		if ( window.event.relatedTarget.id !== "add-negr" && 
+			window.event.relatedTarget.id !== "add-ital" &&
+			window.event.relatedTarget.id !== "add-subr" && 
+			window.event.relatedTarget.id !== "add-link" &&
+			window.event.relatedTarget.id !== "add-img" && 
+			window.event.relatedTarget.id !== "add-cod") {
+
+			document.getElementById("add-negr").disabled = true;
+			document.getElementById("add-ital").disabled = true;
+			document.getElementById("add-subr").disabled = true;
+			document.getElementById("add-link").disabled = true;
+			document.getElementById("add-img").disabled = true;
+			document.getElementById("add-cod").disabled = true;
+		}
+	}
+
+	if(posicion){
+		posicion = posicion.getRangeAt(0);
+	}
+	
+}
